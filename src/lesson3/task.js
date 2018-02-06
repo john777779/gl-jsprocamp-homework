@@ -1,17 +1,19 @@
 /*
-  Write a function, that has 2 required parameters, and any amount of optional parameters. 
+  Write a function, that has 2 required parameters, and any amount of optional parameters.
   Function should return a number - amount of optional parameters that were passed into function.
   Hint: you are allowed to modify both function definition and function body.
 */
-export function countOptional() {
-
+export function countOptional(param1, param2, ...rest) {
+  return rest.length || 0;
 }
 
 /*
   Write your implementation of native Function.prototype.bind method
 */
-export function bindContext(fn, context) {
-
+export function bindContext(fn, context, ...rest) {
+  return function() {
+    return fn.call(context, ...rest);
+  }
 }
 
 
@@ -30,7 +32,16 @@ export function bindContext(fn, context) {
   Take to account, that you should track log call index starting from 1
 */
 export function addLogCapability(object) {
-
+  object.counter = 0;
+  const log = function() {
+    object.counter += 1;
+    if (this.name) {
+      return `Log message #${this.counter}: my name is ${this.name}`;
+    } else {
+      return `Log message #${this.counter}: I dont have name`;
+    }
+  }
+  object.log = log.bind(object);
 }
 
 /*
@@ -39,14 +50,19 @@ export function addLogCapability(object) {
   myLogger('first message'); //=> My Topic: first message
 */
 export function logger(topic) {
-
+  function log(context, theme) {
+    return(`${context}: ${theme}`);
+  }
+  return log.bind(null, topic);
 }
 
 /*
   Implement left to right compose function
 */
-export function compose() {
-
+export function compose(...rest) {
+  return function(value) {
+    return rest.reduce((func1, func2) => func2(func1(value)));
+  }
 }
 
 /*
@@ -60,7 +76,9 @@ export function compose() {
   sumWith4(5) // 9
 */
 export function partial(fn) {
-
+  return function(...rest) {
+    return fn.bind(null,...rest);
+  }
 }
 
 export default {
